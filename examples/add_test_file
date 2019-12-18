@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+repo_path, branch = ARGV
+
+file_path = [repo_path, 'TEST.md'].join('/')
+
+abort if File.exist?(file_path)
+
+File.open(file_path, 'w') do |file|
+  file.write <<~CONTENT
+    # TEST
+
+    This is a test file. It serves no purpose other than to test.
+
+    And now we've reached the exciting conclusion of the file.
+  CONTENT
+end
+
+puts <<~COMMIT_MESSAGE
+  Add test file
+
+  We're adding a test for testing purposes to the #{branch} branch.
+COMMIT_MESSAGE
+
+exit

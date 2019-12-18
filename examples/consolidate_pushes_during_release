@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+
+# Problem: now that Workarea uses GitHub actions we are running out of minutes
+# due to each plugin pushing a CHANGELOG commit and tags separately.
+#
+# This script should be used for plugins, only. Workarea's Rakefile and plugin
+# template should be handled separately. This might not work on API since it,
+# too, is a meta-gem.
+#
+# Refer to new hotness: https://stackoverflow.com/a/3745250
+
+repo_path, _ = ARGV
+rakefile_path = [repo_path, 'Rakefile'].join('/')
+
+# Test to see if the Rakefile even exists in the first place
+abort("No Rakefile") unless File.exist?(rakefile_path)
+
+# Load Rakefile
+rakefile = File.open(rakefile_path, 'r+')
+rakefile_content = rakefile.read
+rakefile.close
+
+# Test for release task
+abort("No release task") unless rakefile_content.include?('task :release')
+
+# Uncomment Changelog generator while we're in there
+rakefile_content.gsub!(/(\s+)#(Rake::Task|system)(.*changelog)/i, '\1\2\3')
+
+# Remove offending initial push
+rakefile_content.gsub!(/\s+#?system\s*['"]git push origin head['"].*/i, '')
+
+# Replace extraneous tags push with new hotness
+rakefile_content.gsub!(/git push --tags/i, 'git push origin HEAD --follow-tags')
+
+# Write the file
+rakefile = File.open(rakefile_path, 'w')
+rakefile.write(rakefile_content)
+rakefile.close
+
+# Output the commit message
+puts <<~COMMIT_MESSAGE
+  Remove extraneous push in Release task
+
+  We're running out of minutes in our GitHub actions due to duplicate pushes
+  during a release. This consolidates the two pushes into one.
+
+  No changelog
+
+  WORKAREA-148
+COMMIT_MESSAGE
+
+# Exit cleanly
+exit
