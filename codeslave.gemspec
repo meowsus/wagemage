@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Curt Howard"]
   spec.email         = ["curt@portugly.com"]
 
-  spec.summary       = "A CLI for making the same change across many repos"
-  spec.description   = "A CLI for making the same change across many repos"
+  spec.summary       = "A CLI for making changes to many Github repos"
+  spec.description   = "A CLI for making changes to many Github repos"
   spec.homepage      = "https://github.com/meowsus/codeslave"
   spec.license       = "MIT"
 
@@ -31,4 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.0"
 
   spec.add_dependency "slop", "~> 4.7"
+  spec.add_dependency "colorize", "~> 0.8"
+  spec.add_dependency "octokit", "~> 4.14"
 end

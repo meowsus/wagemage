@@ -4,23 +4,32 @@ A CLI for making changes to many git repositories.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'codeslave'
+```sh
+gem install codeslave
 ```
 
-And then execute:
+## Dependencies 
 
-    $ bundle
+1. A [Github account](https://github.com/join)
+1. A [Github Personal Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) with `repo` permissions
+1. [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+1. [Hub](https://github.com/github/hub/releases) 
+1. One or more repositories owned by you or an organization of which you are a member 
 
-Or install it yourself as:
+## Usage 
 
-    $ gem install codeslave
+Note: You will be prompted to enter your Github Personal Access Token at runtime, unless it is supplied as the value for the `CODESLAVE_GITHUB_TOKEN` environment variable in your current session.
 
-## Usage
+### View CLI Usage
 
-TODO: Write usage instructions here
+```sh
+codeslave --help
+```
+
+### Options
+
+TODO:
+    org is optional, default to authenticated user
 
 ## Development
 
