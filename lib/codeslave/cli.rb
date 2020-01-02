@@ -3,7 +3,7 @@ module Codeslave
     def initialize(args)
       @options = Slop.parse(args) do |option|
         option.string '-o', '--org', 'github org'
-        option.string '-r', '--repo', "regex against which to match repo names"
+        option.string '-r', '--repo', 'regex against which to match repo names'
         option.bool '-h', '--help', 'print this help'
         option.on '-v', '--version', 'print the version'
       end
@@ -15,8 +15,6 @@ module Codeslave
     end
 
     def run
-      repos
-      require 'pry'; binding.pry
     end
 
     private
@@ -29,7 +27,7 @@ module Codeslave
 
         last_response = @okclient.last_response
         while last_response.rels[:next] do
-          repos.concat last_response.rels[:next].get.data
+          repos.concat(last_response.rels[:next].get.data)
           last_response = last_response.rels[:next].get
         end
 
