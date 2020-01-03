@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+# Problem: a test failure in the workarea-reviews plugin had eluded us for quite
+# a while. During the hustle-n-bustle of the plugin updates at the end of the
+# last minor release, the theme plugins just decorated the test. Now that the
+# test has been fixed we need to obtain a list of plugins that have decorated
+# this test so that we can go and manually edit them.
+#
+# Solution: use ack to search for the test name in decorator files across all
+# available repositories and output a log of affected plugins.
+#
+# Requires: ack and 'decorator' designated as type ruby in .ackrc
+#
+# This is kind of overkill.
+#
+# Command to run:
+#
+# codeslave \
+#   --org workarea-commerce \
+#   --repo '-theme$' \
+#   --branch '(-stable$|^master$)' \
+#   --script examples/find_decorated_test \
+#   --debug
+
+repo_path, _ = ARGV
+logfile = File.open("#{ENV['HOME']}/decorated_tests.log", 'a')
+
+decorated_files = Dir[[repo_path, '**/reviews_helper_test.decorator'].join('/')]
+
+if decorated_files.empty?
+  logfile.close
+  abort('File not found in')
+end
+
+file_content = "\n#{decorated_files.join("\n")}\n"
+
+logfile.write(file_content)
+logfile.close
+
+abort
