@@ -25,4 +25,5 @@ require 'codeslave/repo'
 
 module Codeslave
   class Error < StandardError; end
+  class OptionError < Slop::MissingRequiredOption; end
 end

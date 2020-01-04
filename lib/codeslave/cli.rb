@@ -11,15 +11,9 @@ module Codeslave
         option.string '-r', '--repo', 'regex against which to match repo names'
         option.string '-b', '--branch', 'regex against which to match branches'
 
-        option.path(
-          '-s',
-          '--script',
-          "the script to run on each repo's branch",
-          required: true
-        )
+        option.path '-s', '--script', "the script to run on each repo's branch"
 
         option.array '--reviewers', 'array of github users to put on the PR'
-
         option.bool '--debug', "don't push or issue PR, keep the tmp directory"
       end
 
@@ -38,7 +32,7 @@ module Codeslave
       say "#{repos.size} repo(s) found:", color: :green
       display_list(repos.map(&:name))
 
-      say 'Would you like to operate on these repos? (Y/n)'
+      say 'Would you like to clone these repos? (Y/n)'
       abort if ask.casecmp?('n')
 
       begin
@@ -141,8 +135,10 @@ module Codeslave
     end
 
     def validate_options!
-      abort(@options) if @options.help?
+      abort(@options.to_s) if @options.help?
       abort("Codeslave v#{Codeslave::VERSION}") if @options.version?
+
+      raise OptionError if @options.script.nil?
     end
   end
 end
