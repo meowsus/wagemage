@@ -28,42 +28,140 @@ gem install codeslave
 
 Codeslave hits the GitHub API to retrieve a list of repositories for the currently authenticated user. It can optionally be configured to search only within a given GitHub organization for this list of repositories.
 
-Once the list of repositories is derived, Codeslave asks if you'd like to clone the full list. If you agree, they are cloned to a temporary directory on your machine that will be cleaned up once the operation is complete, unless otherwise specified.
+Once the list of repositories is derived, Codeslave asks if you'd like to clone the list of repos it has found. If you agree, they are cloned to a temporary directory on your machine that will be cleaned up once the operation is complete, unless otherwise specified.
 
-Upon cloning all of the repositories, each is searched for a list of remote branches. Codeslave can optionally be configured to search for branches that match a specific pattern.
+Upon cloning all of the repositories, each is searched for a list of remote branches. Codeslave can optionally be configured to search for remote branches that match a specific pattern.
 
 Once the list of branches is derived, Codeslave asks you to review the list of repositories and their branches to make sure that they look correct to you before executing the supplied script on each branch.
 
 For each branch in each repository the following occurs:
-1. A branch is checked out
-1. A new, "temporary" branch based on the branch that has been checked out is created in the format `codeslave/[ORIGINAL_BRANCH_NAME]/[TIMESTAMP]`.
+1. The branch is checked out
+1. A new, "temporary" branch based on the branch that has been checked out is created in the format `[PREFIX]/[ORIGINAL_BRANCH_NAME]/[TIMESTAMP]`.
 1. The supplied script is executed and is passed arguments in this order:
     1. The current repo's directory, and
+    1. The current repo's name, and
     1. The current branch name
-1. If the supplied script exits with a
-    * non-zero exit code, the following steps are skipped
-    * zero exit code, the following steps occur
+1. **The following steps are skipped if**
+    * the script exits with a _non-zero exit code_
+    * the script exits with a _zero exit code_ but no changes were made to the repository
 1. All changes are added to the Git stage
 1. A commit is made, based on the `stdout` of the supplied script
+1. **The following steps are skipped if the `--debug` option is supplied**
 1. The branch is pushed
 1. A pull request is automatically created, with configurable reviewers
 
 ## Usage
 
-Note: You will be prompted to enter your Github Personal Access Token at runtime, unless it is supplied as the value for the `CODESLAVE_GITHUB_TOKEN` environment variable in your current session.
+```sh
+$ codeslave --help
 
-| Option | Description | Required? |
-| ------ | ----------- | --------- |
-| `-h`, `--help` | Displays the command's help and exits | No |
-| `-v`, `--version` | Displays the command's version and exits | No |
-| `-o`, `--org` | Find repositories within a given Github organization. | No. Defaults to all available repos for the authorized user. |
-| `-r`, `--repo` | A regular expression on which to filter returned repository names. A repository name is the _full name of the repository_, i.e. `meowsus/codeslave` and not simply `codeslave`. | No. Defaults to all available repos. |
-| `-b`, `--branch` | A regular express on which to filter discovered branch names, after a repository is cloned. | No. Defaults to all remote branches. |
-| `-s`, `--script` | A path to any executable script file to run against all filtered branches across all filtered repos. | Yes |
-| `--reviewers` | A comma delimited list of GitHub users to add to the resulting pull request, i.e. `meowsus,wumpus_hunter,code_lich` | No |
-| `--debug` | Dry run. Doesn't push or issue a pull request, retains the temporary directory for review. | No |
+usage: codeslave [options]
+    -h, --help       print this help
+    -v, --version    print the version
+    -o, --org        github org
+    -r, --repo       regex against which to match repo names
+    -b, --branch     regex against which to match branches
+    -s, --script     the script to run on each repo's branch
+    --reviewers      array of github users to put on the PR
+    --branch-prefix  prefix of the new branch
+    --debug          don't push or issue PR, keep the tmp directory
+```
 
-## Examples
+You will be prompted to enter your Github Personal Access Token at runtime, unless it is supplied as the value for the `CODESLAVE_GITHUB_TOKEN` environment variable in your current session.
+
+### Options
+
+#### `--org` (or `-o`)
+
+Limits repository search to a specified GitHub organization.
+
+```
+--org workarea-commerce
+```
+
+* **Type**: String
+* **Required?**: No
+* **Default**: All repos available to the authenticated user
+
+#### `--repo` (or `-r`)
+
+Filter returned repositories based on name. Repository names are returned as full names: `meowsus/codeslave` instead of just `codeslave`.
+
+```
+--repo '^workarea-commerce/workarea-' # returns all Workarea plugin repos
+```
+
+* **Type**: Regex String
+* **Required?**: No
+* **Default**: None
+
+#### `--branch` (or `-b`)
+
+Filter available remote branches based on name.
+
+```
+--branch '(-stable$|^master$)' # returns all potentially stable branches
+```
+
+* **Type**: Regex String
+* **Required?**: No
+* **Default**: None
+
+#### `--script` (or `-s`)
+
+An path to a script to be executed on each derived branch across all derived repositories. This path can be absolute or relative to the directory in which the `codeslave` command is run.
+
+```
+--script ~/codeslave_scripts/hunt_the_wumpus
+--script /path/to/codeslave_scripts/angband
+--script ./codeslave_scripts/arena_of_octos
+--script scripts/dwarf_fortress
+```
+
+* **Type**: Path String
+* **Required?**: Yes
+* **Default**: None
+
+#### `--reviewers`
+
+A comma-delineated list of GitHub users to add to the issued pull request. This list must not contain spaces.
+
+```
+--reviewers bencrouse,mttdffy,tubbo,jyucis,meowsus
+```
+
+* **Type**: Array
+* **Required?**: Yes
+* **Default**: None
+
+#### `--branch-prefix`
+
+The prefix of the "temporary" branch that is created before changes are made to the repository.
+
+```
+--branch-prefix WORKAREA-123
+```
+
+* **Type**: String
+* **Required?**: Yes
+* **Default**: `codeslave`
+
+#### `--help` (or `-h`)
+
+Displays the command's help and exits
+
+#### `--version` (or `-v`)
+
+Displays the command's version and exits
+
+#### `--debug`
+
+Prevents
+* pushing branches to GitHub
+* issuing pull requests
+* temporary directory cleanup
+
+### Examples
 
 All master branches across all repositories in a given organization:
 
@@ -80,24 +178,25 @@ All master and development branches for a specific repository, and debug:
 codeslave \
   --repo 'meowsus/codeslave' \
   --branch '^(master|develop)$' \
-  --script ./relative/to/current/directory/script.sh \
+  --script relative/to/current/directory/script.sh \
   --debug
 ```
 
-All stable release branches across the universe of Workarea and its plugins:
+All stable release branches across the universe of Workarea and its plugins, prefixed with a Jira issue key to enable the Jira/GitHub integration, with all team members added to the pull request:
 
 ```sh
 codeslave \
   --org workarea-commerce \
   --repo '^workarea-commerce/workarea' \
   --branch '(-stable$|^master$)' \
-  --script ~/hunt_the_wumpus \
-  --reviewers bencrouse,mttdffy,tubbo
+  --script ./hunt_the_wumpus \
+  --branch-prefix WORKAREA-123 \
+  --reviewers bencrouse,mttdffy,tubbo,jyucis
 ```
 
 ## Scripting
 
-As mentioned, the script is supplied with the current repository's path as the first argument and the current branch name as the second.
+As mentioned, the script is supplied with the current repository's path as the first argument, the current repository's name as the second, and the current branch name as the third.
 
 The script can be of any type that is executable by the host machine.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-repo_path, branch = ARGV
+repo_path, repo_name, branch = ARGV
 
 file_path = [repo_path, 'TEST.md'].join('/')
 
@@ -12,6 +12,8 @@ File.open(file_path, 'w') do |file|
 
     This is a test file. It serves no purpose other than to test.
 
+    It should be committed to the #{repo_name} repository and merged into the #{branch} branch.
+
     And now we've reached the exciting conclusion of the file.
   CONTENT
 end
@@ -19,7 +21,7 @@ end
 puts <<~COMMIT_MESSAGE
   Add test file
 
-  We're adding a test for testing purposes to the #{branch} branch.
+  We're adding a test file for testing purposes to the #{branch} branch.
 COMMIT_MESSAGE
 
 exit

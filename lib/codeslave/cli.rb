@@ -14,6 +14,12 @@ module Codeslave
         option.path '-s', '--script', "the script to run on each repo's branch"
 
         option.array '--reviewers', 'array of github users to put on the PR'
+        option.string(
+          '--branch-prefix',
+          'prefix of the new branch',
+          default: 'codeslave'
+        )
+
         option.bool '--debug', "don't push or issue PR, keep the tmp directory"
       end
 
@@ -29,79 +35,79 @@ module Codeslave
     def run
       raise Error, 'No repos found' if repos.empty?
 
-      say "#{repos.size} repo(s) found:", color: :green
-      display_list(repos.map(&:name))
+      say "#{repos.size} repo(s) found:", space: true
+      repos.each { |r| say "* #{r.name}", color: :green }
 
-      say 'Would you like to clone these repos? (Y/n)'
+      say 'Would you like to clone these repos? (Y/n)', space: true
       abort if ask.casecmp?('n')
 
       begin
-        repos.each do |repo|
-          say "=> Cloning #{repo.name} to #{repo.clone_dir}", space: false
-          repo.clone!
-        end
+        clone_repos
+        display_branch_list
 
-        repos.each do |repo|
-          branches = repo.branches(@options[:branch])
+        say <<~MESSAGE, space: true, color: :yellow
+          You're about to run this script against the aforementioned list:
+          => #{@script_path}
+        MESSAGE
 
-          if branches.empty?
-            warning("Couldn't find matching branches for '#{repo.name}'")
-          else
-            say "Found #{branches.size} for '#{repo.name}':", color: :green
-            display_list(branches, ' - ')
-          end
-        end
-
-        if @options[:debug]
-          say "Debugging is enabled. Rest easy, my friend.", color: :green
-          say "Would you like to continue? (Y/n)"
-        else
-          say <<~MESSAGE, color: :yellow
-            You are about to execute the following script on every listed branch:
-            => #{@script_path}
-
-            This is a potentially dangerous action.
-
-            Are you absolutely sure you want to do this? (Y/n)
-          MESSAGE
-        end
+        say "Would you like to execute this script? (Y/n)"
         abort if ask.casecmp?('n')
 
         repos.each do |repo|
-          repo.branches(@options[:branch]).each do |branch|
-            repo.checkout!(branch)
-            repo.checkout!("codeslave/#{branch}/#{Time.now.to_i}", true)
+          repo.branches.each do |branch|
+            new_branch = [
+              @options[:branch_prefix],
+              branch,
+              Time.now.to_i
+            ].join('/')
 
-            result = command([@script_path, repo.clone_dir, branch].join(' '))
+            repo.checkout! branch
+            repo.checkout! new_branch, create: true
 
-            unless result[:status].success?
-              warning("=> #{repo.name}:#{branch} | #{result[:stderr]}")
+            say "=> Running script on #{repo.name}:#{new_branch}"
+            script_result = command(
+              [@script_path, repo.clone_dir, repo.name, branch].join(' ')
+            )
+
+            if script_result[:status].success? && !repo.has_changed?
+              say 'SCRIPT SUCCEEDED BUT NO CHANGES TO COMMIT!', color: :yellow
+              next
+            elsif !script_result[:status].success?
+              say 'SCRIPT FAILED!', color: :red
               next
             end
 
-            unless repo.has_changed?
-              warning("=> #{repo.name}:#{branch} | No changes to commit")
-              next
-            end
+            say 'SCRIPT SUCCEEDED! COMMITTING CHANGES!', color: :green
 
             repo.add_all!
-            repo.commit!(result[:stdout])
+            repo.commit! script_result[:stdout]
 
             if @options[:debug]
-              say "=> Committed to '#{repo.clone_dir}' but not pushed"
+              say 'DEBUG ENABLED! SKIPPING PUSH & PULL REQUEST!', color: :yellow
               next
             end
 
             repo.push!
 
-            result = repo.pull_request!(branch, @options[:reviewers])
-            say <<~MESSAGE, space: false, color: :green
-              => #{repo.name}:#{branch} | #{result[:stdout]}
-            MESSAGE
+            pr_result = repo.pull_request!(branch, @options[:reviewers])
+
+            if pr_result[:status].success?
+              say "=> PULL REQUEST URL: #{pr_result[:stdout]}", color: :green
+            else
+              say "=> PULL REQUEST FAILED!", color: :red
+            end
           end
         end
       ensure
-        FileUtils.remove_entry(@tmpdir) unless @options[:debug]
+        if @options[:debug]
+          say <<~MESSAGE, space: :true, color: :yellow
+            The temporary directory has been retained because you have specified
+            the --debug flag. You can view it here:
+            => #{@tmpdir}
+          MESSAGE
+        else
+          FileUtils.remove_entry(@tmpdir)
+        end
       end
     end
 
@@ -119,7 +125,7 @@ module Codeslave
           last_response = last_response.rels[:next].get
         end
 
-        repos.map! { |r| Codeslave::Repo.new(r, @tmpdir) }
+        repos.map! { |r| Codeslave::Repo.new(r, @tmpdir, @options[:branch]) }
 
         return repos if @options[:repo].nil?
 
@@ -128,9 +134,29 @@ module Codeslave
       end
     end
 
+    def clone_repos
+      repos.each do |repo|
+        say "=> Cloning #{repo.name} to #{repo.clone_dir}", color: :light_blue
+        repo.clone!
+      end
+    end
+
+    def display_branch_list
+      repos.each do |repo|
+        say "* #{repo.name}:", space: true
+
+        if repo.branches.empty?
+          say ' - NONE FOUND', color: :red
+          next
+        end
+
+        repo.branches.each { |b| say " - #{b}", color: :green }
+      end
+    end
+
     def request_token
       say 'Github Personal Access Token missing', color: :red
-      say 'Please supply it now:', space: false
+      say 'Please supply it now:'
       ask
     end
 
@@ -138,7 +164,7 @@ module Codeslave
       abort(@options.to_s) if @options.help?
       abort("Codeslave v#{Codeslave::VERSION}") if @options.version?
 
-      raise OptionError if @options.script.nil?
+      raise OptionError if @options[:script].nil?
     end
   end
 end

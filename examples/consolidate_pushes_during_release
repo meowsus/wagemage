@@ -8,8 +8,18 @@
 # too, is a meta-gem.
 #
 # Refer to new hotness: https://stackoverflow.com/a/3745250
+#
+# Command to run:
+#
+# codeslave \
+#   --org workarea-commerce \
+#   --repo '^workarea-commerce/workarea-' \
+#   --branch '(-stable$|^master$)' \
+#   --script examples/consolidate_pushes_during_release \
+#   --reviewers bencrouse,mttdffy,tubbo,jyucis \
+#   --branch-prefix WORKAREA-148
 
-repo_path, _ = ARGV
+repo_path = ARGV.first
 rakefile_path = [repo_path, 'Rakefile'].join('/')
 
 # Test to see if the Rakefile even exists in the first place

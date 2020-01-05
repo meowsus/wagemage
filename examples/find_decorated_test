@@ -11,7 +11,7 @@
 #
 # Requires: ack and 'decorator' designated as type ruby in .ackrc
 #
-# This is kind of overkill.
+# This is kind of overkill. It also adds a file to `~/decorated_tests.log` FYI.
 #
 # Command to run:
 #
@@ -22,19 +22,19 @@
 #   --script examples/find_decorated_test \
 #   --debug
 
-repo_path, _ = ARGV
+repo_path, repo_name, branch = ARGV
 logfile = File.open("#{ENV['HOME']}/decorated_tests.log", 'a')
 
 decorated_files = Dir[[repo_path, '**/reviews_helper_test.decorator'].join('/')]
 
 if decorated_files.empty?
   logfile.close
-  abort('File not found in')
+  abort("File not found in #{repo_path}")
 end
 
-file_content = "\n#{decorated_files.join("\n")}\n"
+file_content = "in: #{repo_name}:#{branch}\n"
 
 logfile.write(file_content)
 logfile.close
 
-abort
+exit

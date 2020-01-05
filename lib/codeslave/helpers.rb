@@ -1,12 +1,6 @@
 module Codeslave
   module Helpers
-    def display_list(list, prefix = "* ")
-      list.each do |item|
-        puts [prefix, item].join
-      end
-    end
-
-    def say(message, space: true, color: :white)
+    def say(message, space: false, color: :white)
       puts if space
       puts message.colorize(color.to_sym)
     end
