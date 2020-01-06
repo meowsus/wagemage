@@ -50,6 +50,12 @@ module Codeslave
           => #{@script_path}
         MESSAGE
 
+        if @options[:debug]
+          say "(--debug flag enabled. No code will be pushed.)", color: :green
+        else
+          say "(--debug flag NOT enabled. Code may be pushed.)", color: :red
+        end
+
         say "Would you like to execute this script? (Y/n)"
         abort if ask.casecmp?('n')
 
