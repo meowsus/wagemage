@@ -6,11 +6,6 @@
 # test has been fixed we need to obtain a list of plugins that have decorated
 # this test so that we can go and manually edit them.
 #
-# Solution: use ack to search for the test name in decorator files across all
-# available repositories and output a log of affected plugins.
-#
-# Requires: ack and 'decorator' designated as type ruby in .ackrc
-#
 # This is kind of overkill. It also adds a file to `~/decorated_tests.log` FYI.
 #
 # Command to run:
