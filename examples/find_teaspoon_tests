@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+# Problem: Teaspoon isn't ready for Rails 6 and we're brainstorming solutions.
+# We need to know what plugins even have teaspoon tests written for them.
+#
+# Adds a file at `/tmp/javascript_tests_in_plugins.log` FYI.
+#
+# Command to run:
+#
+# codeslave \
+#   --org workarea-commerce \
+#   --repo '^workarea-commerce/workarea-' \
+#   --branch '(-stable$|^master$)' \
+#   --script examples/find_teaspoon_tests \
+#   --debug
+
+repo_path, repo_name, branch = ARGV
+logfile = File.open("/tmp/javascript_tests_in_plugins.log", 'a')
+
+test_files = Dir[[repo_path, 'test/javascripts/**/*.js'].join('/')]
+
+if test_files.empty?
+  logfile.close
+  abort("Teaspoon tests not found in #{repo_path}")
+end
+
+file_content = "Teaspoon tests found in: #{repo_name}:#{branch}\n"
+
+logfile.write(file_content)
+logfile.close
+
+exit
