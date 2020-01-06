@@ -6,7 +6,7 @@
 # test has been fixed we need to obtain a list of plugins that have decorated
 # this test so that we can go and manually edit them.
 #
-# This is kind of overkill. It also adds a file to `~/decorated_tests.log` FYI.
+# Adds a file to `/tmp/decorated_tests.log` FYI.
 #
 # Command to run:
 #
@@ -18,7 +18,7 @@
 #   --debug
 
 repo_path, repo_name, branch = ARGV
-logfile = File.open("#{ENV['HOME']}/decorated_tests.log", 'a')
+logfile = File.open("/tmp/decorated_tests.log", 'a')
 
 decorated_files = Dir[[repo_path, '**/reviews_helper_test.decorator'].join('/')]
 
