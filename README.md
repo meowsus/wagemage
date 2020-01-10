@@ -204,6 +204,8 @@ The script **must** exit with a zero exit code to be considered successful. Exit
 
 Peruse [the examples](./examples) for a better understanding of what to do and contribute your own if you've done something noteworthy!
 
+Any data sent to `STDERR` will be printed to your terminal after the command runs.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
