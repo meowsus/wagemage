@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+TICKETS = {
+  'workarea-commerce/workarea-address-verification' => 'WEBADDVER-4',
+  'workarea-commerce/workarea-stripe' => 'STRIPE-2',
+  'workarea-commerce/workarea-quotes' => 'QUOTES-3',
+  'workarea-commerce/workarea-oms' => 'OMS-5',
+  # 'workarea-commerce/workarea-global-e' => 'GLOBALE-3',
+  'workarea-commerce/workarea-gift-cards' => 'GIFTCARDS-6',
+  'workarea-commerce/workarea-forter' => 'FORTER-2',
+  'workarea-commerce/workarea-bopus' => 'BOPUS-3',
+  'workarea-commerce/workarea-payware-connect' => 'PAYWARE-1'
+}
+
+path, repo, _branch = ARGV
+plugin = Pathname.new(path)
+ticket = TICKETS[repo]
+@changed = false
+
+plugin.glob('test/**/*.{rb,decorator}').each do |test|
+  fixed = test.read.to_s.gsub(/2020,/, 'next_year,')
+                        .gsub(/'2020'/, 'next_year.to_s')
+                        .gsub(/"2020",/, 'next_year.to_s,')
+  @changed = fixed != test.read.to_s
+
+  test.write(fixed)
+end
+
+gemfile = plugin.join('Gemfile')
+gemfile.write(gemfile.read.to_s.gsub(/:master/, "'v3.5-stable'"))
+
+STDERR.puts "Ticket Not Found For Repo '#{repo}'" if ticket.nil? && @changed
+
+puts <<~COMMIT_MESSAGE
+Fix Tests for 2020
+
+Update all tests so that they no longer depend on the year 2020 as an
+expiration year. Instead, use the `next_year` method provided by Workarea.
+
+#{ticket}
+COMMIT_MESSAGE
