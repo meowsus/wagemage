@@ -75,6 +75,8 @@ module Codeslave
               [@script_path, repo.clone_dir, repo.name, branch].join(' ')
             )
 
+            say script_result[:stderr], :red if script_result[:stderr].present?
+
             if script_result[:status].success? && !repo.has_changed?
               say 'SCRIPT SUCCEEDED BUT NO CHANGES TO COMMIT!', color: :yellow
               next
