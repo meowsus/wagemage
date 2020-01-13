@@ -128,7 +128,7 @@ An path to a script to be executed on each derived branch across all derived rep
 A boolean option to indicate that only the first branch in the derived list of branches for a repository should be operated upon.
 
 ```
---branches '(-stable$|^master$)' \ # potentially returns `v2.1-stable, master`
+--branch '(-stable$|^master$)' \ # potentially returns `v2.1-stable, master`
 --first-branch # operates on `v2.1-stable` only
 ```
 
