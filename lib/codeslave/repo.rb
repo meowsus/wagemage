@@ -35,6 +35,12 @@ module Codeslave
             .reject { |b| b.include?('->') }
             .map { |b| b.split('/')[2..-1].join('/') }
 
+        if branch_list.include?('master')
+          branch_list
+            .reject! { |b| b == 'master' }
+            .push('master')
+        end
+
         return branch_list if @branch_pattern.nil?
 
         branch_name_regex = Regexp.new(@branch_pattern)

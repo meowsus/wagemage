@@ -13,6 +13,7 @@ module Codeslave
 
         option.path '-s', '--script', "the script to run on each repo's branch"
 
+        option.bool '--first-branch', 'operate only on the "oldest" branch'
         option.array '--reviewers', 'array of github users to put on the PR'
         option.string(
           '--branch-prefix',
@@ -60,7 +61,12 @@ module Codeslave
         abort if ask.casecmp?('n')
 
         repos.each do |repo|
-          repo.branches.each do |branch|
+          repo.branches.each_with_index do |branch, index|
+            if index > 0
+              say "=> Skipping #{repo.name}:#{branch}", color: :yellow
+              next
+            end
+
             new_branch = [
               @options[:branch_prefix],
               branch,
@@ -75,7 +81,9 @@ module Codeslave
               [@script_path, repo.clone_dir, repo.name, branch].join(' ')
             )
 
-            say script_result[:stderr], :red if script_result[:stderr].present?
+            unless script_result[:stderr].empty?
+              say script_result[:stderr], color: :red
+            end
 
             if script_result[:status].success? && !repo.has_changed?
               say 'SCRIPT SUCCEEDED BUT NO CHANGES TO COMMIT!', color: :yellow
@@ -158,7 +166,12 @@ module Codeslave
           next
         end
 
-        repo.branches.each { |b| say " - #{b}", color: :green }
+        if @options[:first_branch]
+          say " - #{repo.branches.first}", color: :green
+          repo.branches[1..-1].each { |b| say " - #{b}" }
+        else
+          repo.branches.each { |b| say " - #{b}", color: :green }
+        end
       end
     end
 
