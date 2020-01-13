@@ -62,6 +62,7 @@ usage: codeslave [options]
     -r, --repo       regex against which to match repo names
     -b, --branch     regex against which to match branches
     -s, --script     the script to run on each repo's branch
+    --first-branch   operate only on the "oldest" branch 
     --reviewers      array of github users to put on the PR
     --branch-prefix  prefix of the new branch
     --debug          don't push or issue PR, keep the tmp directory
@@ -120,6 +121,19 @@ An path to a script to be executed on each derived branch across all derived rep
 
 * **Type**: Path String
 * **Required?**: Yes
+* **Default**: None
+
+#### `--first-branch`
+
+A boolean option to indicate that only the first branch in the derived list of branches for a repository should be operated upon.
+
+```
+--branches '(-stable$|^master$)' \ # potentially returns `v2.1-stable, master`
+--first-branch # operates on `v2.1-stable` only
+```
+
+* **Type**: Boolean
+* **Required?**: No
 * **Default**: None
 
 #### `--reviewers`
