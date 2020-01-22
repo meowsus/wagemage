@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+# Problem: after inheriting our rubocop configuration from the base workarea
+# gem a file is downloaded to the repo each time Rubocop is run. This is a pain
+# during a release because my editor will automatically run Rubocop each time
+# a Ruby file is opened
+#
+# Solution: Check .gitignore for the presence of `.rubocop-http`. If it doesn't
+# exist append `.rubocop-http*` to the end of the file.
+#
+# Command to run:
+#
+# codeslave \
+#   --org workarea-commerce \
+#   --repo '^workarea-commerce/workarea-' \
+#   --branch '(-stable$|^master$)' \
+#   --script examples/ignore_remote_rubocop_config \
+#   --reviewers bencrouse
+
+repo_path = ARGV.first
+gitignore_path = [repo_path, '.gitignore'].join('/')
+
+# Test to see if the .gitignore even exists in the first place
+abort("No Gitignore") unless File.exist?(gitignore_path)
+
+# Load Gitignore content
+gitignore = File.open(gitignore_path, 'r+')
+gitignore_content = gitignore.read
+gitignore.close
+
+# Test for `.rubocop-http` entry
+if gitignore_content.include?('.rubocop-http')
+  abort("Already ignoring remote config")
+end
+
+gitignore = File.open(gitignore_path, 'a')
+gitignore.write '.rubocop-http*'
+gitignore.close
+
+# Output the commit message
+puts <<~COMMIT_MESSAGE
+  Ignore remote Rubocop config
+
+  No changelog
+COMMIT_MESSAGE
+
+# Exit cleanly
+exit
