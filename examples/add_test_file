@@ -1,5 +1,13 @@
 #!/usr/bin/env ruby
 
+# Problem: I need a script with which I may test.
+#
+# Command to run:
+#
+# codeslave \
+#   --repo 'meowsus/codeslave' \
+#   --script examples/add_test_file
+
 repo_path, repo_name, branch = ARGV
 
 file_path = [repo_path, 'TEST.md'].join('/')
