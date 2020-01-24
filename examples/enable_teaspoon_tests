@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+
+require 'open3'
+
+# Problem: During our upgrade to Rails 6 we found that Teaspoon wasn't
+# compatable. As a result we disabled teaspoon tests across all of our builds.A
+#
+# Solution: Scan through each repo to find any teaspoon tests. If found, add
+# the appropriate entry for the corresponding engine to ci.yml.
+#
+# Command to run:
+#
+# codeslave \
+#   --org workarea-commerce \
+#   --repo '^workarea-commerce/workarea-' \
+#   --branch '(-stable$|^master$)' \
+#   --script examples/enable_teaspoon_tests \
+#   --reviewers bencrouse,mttdffy,tubbo,jyucis \
+#   --branch-prefix WORKAREA-185
+
+repo_path = ARGV.first
+ci_file_path = [repo_path, '.github', 'workflows', 'ci.yml'].join('/')
+rakefile_path = [repo_path, 'Rakefile'].join('/')
+
+# See if there are no tests to run
+tests = Dir["#{repo_path}/test/javascript*/**/*.js"]
+abort('No tests') unless tests.any?
+
+# Potential entry for ci.yml
+ci_entry = <<~ENTRY
+
+    teaspoon:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6.x
+      - uses: workarea-commerce/ci/test@v1
+        with:
+          command: bin/rails app:teaspoon
+ENTRY
+
+# Potential entry for rakefile
+rakefile_entry = <<~ENTRY
+
+  desc "Run the JavaScript tests"
+  ENV["TEASPOON_RAILS_ENV"] = File.expand_path("../test/dummy/config/environment", __FILE__)
+  task teaspoon: "app:teaspoon"
+
+  desc "Start a server at http://localhost:3000/teaspoon for JavaScript tests"
+  task :teaspoon_server do
+    Dir.chdir("test/dummy")
+    teaspoon_env = File.expand_path("../test/teaspoon_env.rb", __FILE__)
+    system "RAILS_ENV=test TEASPOON_ENV=#\{teaspoon_env\} rails s"
+  end
+ENTRY
+
+# Write to ci.yml if no reference to teaspoon is found
+ci_file = File.open(ci_file_path, 'a+')
+ci_file.write(ci_entry) unless ci_file.read =~ /teaspoon/
+ci_file.close
+
+# Write to Rakefile if no reference to teaspoon is found
+rakefile = File.open(rakefile_path, 'a+')
+rakefile.write(rakefile_entry) unless rakefile.read =~ /teaspoon/
+rakefile.close
+
+# Check to see if any changes were made
+stdout, _ = Open3.capture3('git status', chdir: repo_path)
+abort("No changes made") if stdout =~ /nothing to commit/
+
+# Output commit message
+puts <<~COMMIT_MESSAGE
+  Enable Teaspoon in CI
+
+  No changelog
+
+  WORKAREA-185
+COMMIT_MESSAGE
+
+# Exit cleanly
+exit
