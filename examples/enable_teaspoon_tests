@@ -27,18 +27,18 @@ tests = Dir["#{repo_path}/test/javascript*/**/*.js"]
 abort('No tests') unless tests.any?
 
 # Potential entry for ci.yml
-ci_entry = <<~ENTRY
+ci_entry = <<-ENTRY
 
-    teaspoon:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.6.x
-      - uses: workarea-commerce/ci/test@v1
-        with:
-          command: bin/rails app:teaspoon
+  teaspoon:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - uses: workarea-commerce/ci/test@v1
+      with:
+        command: bin/rails app:teaspoon
 ENTRY
 
 # Potential entry for rakefile
