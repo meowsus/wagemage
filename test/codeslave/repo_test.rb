@@ -17,10 +17,14 @@ module Codeslave
     end
 
     test 'clone' do
-      VCR.use_cassette :git_clone do
-        assert @repo.clone!
-        assert File.exist?(@repo.clone_dir)
-      end
+      cmd = "git clone git@github.com:tubbo/codeslave.git #{@repo.clone_dir}"
+
+      Codeslave
+        .expects(:command)
+        .with(cmd, error: true)
+        .returns(true)
+
+      assert @repo.clone!
     end
 
     test 'branches' do
