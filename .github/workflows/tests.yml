@@ -11,8 +11,6 @@ jobs:
         with:
           ruby_version: 2.6.x
       - name: Install Dependencies
-        run: |
-        gem install bundler
-        bundle install
+        run: 'gem install bundler && bundle install'
       - name: Run Tests
         run: bundle exec rake
