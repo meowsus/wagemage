@@ -1,7 +1,5 @@
 module Codeslave
   class Repo
-    include Codeslave::Helpers
-
     attr_reader :clone_dir
 
     def initialize(info, dir, branch_pattern)
@@ -19,12 +17,12 @@ module Codeslave
     end
 
     def clone!
-      command("git clone #{url} #{clone_dir}", error: true)
+      Codeslave.command("git clone #{url} #{clone_dir}", error: true)
     end
 
     def branches
       @branches ||= begin
-        result = command('git branch -a', chdir: @clone_dir)
+        result = Codeslave.command('git branch -a', chdir: @clone_dir)
 
         return [] unless result[:status].success?
 
@@ -50,30 +48,30 @@ module Codeslave
 
     def checkout!(ref, create: false)
       cmd = create ? "git checkout -b #{ref}" : "git checkout #{ref}"
-      command(cmd, chdir: @clone_dir)
+      Codeslave.command(cmd, chdir: @clone_dir)
     end
 
     def add_all!
-      command('git add .', chdir: @clone_dir)
+      Codeslave.command('git add .', chdir: @clone_dir)
     end
 
     def commit!(message)
-      command(%Q[git commit -m "#{message}"], chdir: @clone_dir)
+      Codeslave.command(%Q[git commit -m "#{message}"], chdir: @clone_dir)
     end
 
     def push!
-      command('git push origin HEAD', chdir: @clone_dir)
+      Codeslave.command('git push origin HEAD', chdir: @clone_dir)
     end
 
     def pull_request!(base_branch, reviewers = [])
       cmd = "hub pull-request --no-edit -b #{base_branch}"
       cmd = [cmd, '-r', reviewers.join(',')].join(' ') unless reviewers.empty?
 
-      command(cmd, chdir: @clone_dir)
+      Codeslave.command(cmd, chdir: @clone_dir)
     end
 
     def has_changed?
-      result = command('git status -s', chdir: @clone_dir)
+      result = Codeslave.command('git status -s', chdir: @clone_dir)
       !result[:stdout].empty?
     end
   end

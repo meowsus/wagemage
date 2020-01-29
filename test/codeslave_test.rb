@@ -1,11 +1,15 @@
 require "test_helper"
 
-class CodeslaveTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::Codeslave::VERSION
+class CodeslaveTest < Codeslave::Test
+  test 'defines errors' do
+    assert Codeslave.const_defined?(:Error)
+    assert Codeslave.const_defined?(:OptionError)
   end
 
-  def test_it_does_something_useful
-    assert false
+  test 'helper methods' do
+    output, errors = capture_io { Codeslave.say('hello') }
+
+    assert_empty errors
+    assert_equal "\e[0;37;49mhello\e[0m\n", output
   end
 end

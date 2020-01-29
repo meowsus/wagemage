@@ -2,6 +2,9 @@
 
 A CLI for making changes to many GitHub-hosted git repositories.
 
+[![Tests
+Status](https://github.com/meowsus/codeslave/workflows/Tests/badge.svg)](https://github.com/meowsus/codeslave/actions)
+
 ## Inspiration
 
 At [Workarea](https://github.com/workarea-commerce) we have adopted a mutli-repo architecture for our platform and its plugins. Though separation is good, we have a lot of repositories. Sometimes we need to make changes across a great deal of our repositories. Sometimes we go a bit insane doing so.
@@ -62,7 +65,7 @@ usage: codeslave [options]
     -r, --repo       regex against which to match repo names
     -b, --branch     regex against which to match branches
     -s, --script     the script to run on each repo's branch
-    --first-branch   operate only on the "oldest" branch 
+    --first-branch   operate only on the "oldest" branch
     --reviewers      array of github users to put on the PR
     --branch-prefix  prefix of the new branch
     --debug          don't push or issue PR, keep the tmp directory
