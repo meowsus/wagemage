@@ -2,7 +2,7 @@ name: Tests
 on: [push]
 jobs:
   test:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v1
