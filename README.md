@@ -1,13 +1,14 @@
 # Wagemage
 
-A CLI for making changes to many GitHub-hosted git repositories.
-
-## Definition
-
 > (noun) A magician, usually hermetic, employed by a corporation or government.
 
-[![Tests
-Status](https://github.com/meowsus/wagemage/workflows/Tests/badge.svg)](https://github.com/meowsus/wagemage/actions)
+A CLI for making changes to many GitHub-hosted git repositories.
+
+[![Tests Status](https://github.com/meowsus/wagemage/workflows/Tests/badge.svg)](https://github.com/meowsus/wagemage/actions)
+
+## Apology and Explanation
+
+This library was developed to handle the unwanted and repetitive tasks I encountered as the release manager at my previous job. While performing these tasks I would frequently imagine myself as a "Wageslave" of the William Gibson / Shadowrun / Cyberpunk universe. Realizing that few people would understand that term, I dubbed this repo "Codeslave." I recognize that the popularity of the cyberpunk universe has no baring on how inappropriately I named this library, and I formally apologize for its unfortunate and initial naming. I have renamed it "Wagemage" as this conveys what I had first attempted to convey in an arguably less racist way.
 
 ## Inspiration
 
