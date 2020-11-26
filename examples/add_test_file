@@ -4,8 +4,8 @@
 #
 # Command to run:
 #
-# codeslave \
-#   --repo 'meowsus/codeslave' \
+# wagemage \
+#   --repo 'meowsus/wagemage' \
 #   --script examples/add_test_file
 
 repo_path, repo_name, branch = ARGV
