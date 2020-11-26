@@ -1,6 +1,6 @@
 require 'test_helper'
 
-module Codeslave
+module Wagemage
   class CliTest < Test
     test 'run script in org repos' do
       skip 'runs interactively'

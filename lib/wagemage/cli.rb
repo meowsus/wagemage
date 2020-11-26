@@ -1,6 +1,6 @@
-module Codeslave
+module Wagemage
   class CLI
-    include Codeslave::Helpers
+    include Wagemage::Helpers
 
     def initialize(args)
       @options = Slop.parse(args) do |option|
@@ -18,7 +18,7 @@ module Codeslave
         option.string(
           '--branch-prefix',
           'prefix of the new branch',
-          default: 'codeslave'
+          default: 'wagemage'
         )
 
         option.bool '--debug', "don't push or issue PR, keep the tmp directory"
@@ -26,7 +26,7 @@ module Codeslave
 
       validate_options!
 
-      token = ENV['CODESLAVE_GITHUB_TOKEN'] || request_token
+      token = ENV['WAGEMAGE_GITHUB_TOKEN'] || request_token
       @okclient = Octokit::Client.new(access_token: token)
 
       @tmpdir = Dir.mktmpdir
@@ -141,7 +141,7 @@ module Codeslave
           last_response = last_response.rels[:next].get
         end
 
-        repos.map! { |r| Codeslave::Repo.new(r, @tmpdir, @options[:branch]) }
+        repos.map! { |r| Wagemage::Repo.new(r, @tmpdir, @options[:branch]) }
 
         return repos if @options[:repo].nil?
 
@@ -183,7 +183,7 @@ module Codeslave
 
     def validate_options!
       abort(@options.to_s) if @options.help?
-      abort("Codeslave v#{Codeslave::VERSION}") if @options.version?
+      abort("Wagemage v#{Wagemage::VERSION}") if @options.version?
 
       raise OptionError if @options[:script].nil?
     end

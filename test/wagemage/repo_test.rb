@@ -1,25 +1,25 @@
 require 'test_helper'
 
-module Codeslave
+module Wagemage
   class RepoTest < Test
     setup do
       @info = {
-        full_name: 'codeslave',
-        ssh_url: 'git@github.com:tubbo/codeslave.git'
+        full_name: 'wagemage',
+        ssh_url: 'git@github.com:tubbo/wagemage.git'
       }
       @path = Dir.mktmpdir
       @repo = Repo.new(@info, @path, @branches)
     end
 
     test 'info attributes' do
-      assert_equal 'codeslave', @repo.name
-      assert_equal 'git@github.com:tubbo/codeslave.git', @repo.url
+      assert_equal 'wagemage', @repo.name
+      assert_equal 'git@github.com:tubbo/wagemage.git', @repo.url
     end
 
     test 'clone' do
-      cmd = "git clone git@github.com:tubbo/codeslave.git #{@repo.clone_dir}"
+      cmd = "git clone git@github.com:tubbo/wagemage.git #{@repo.clone_dir}"
 
-      Codeslave
+      Wagemage
         .expects(:command)
         .with(cmd, error: true)
         .returns(true)
@@ -28,7 +28,7 @@ module Codeslave
     end
 
     test 'branches' do
-      Codeslave
+      Wagemage
         .expects(:command)
         .with('git branch -a', chdir: @repo.clone_dir)
         .returns(
@@ -53,7 +53,7 @@ module Codeslave
     end
 
     test 'checkout' do
-      Codeslave
+      Wagemage
         .expects(:command)
         .with('git checkout refs/heads/develop', chdir: @repo.clone_dir)
         .returns(true)
@@ -62,7 +62,7 @@ module Codeslave
     end
 
     test 'add all' do
-      Codeslave.expects(:command)
+      Wagemage.expects(:command)
                .with('git add .', chdir: @repo.clone_dir)
                .returns(true)
 
@@ -70,7 +70,7 @@ module Codeslave
     end
 
     test 'commit' do
-      Codeslave.expects(:command)
+      Wagemage.expects(:command)
                .with('git commit -m "Test Commit"', chdir: @repo.clone_dir)
                .returns(true)
 
@@ -78,7 +78,7 @@ module Codeslave
     end
 
     test 'push' do
-      Codeslave.expects(:command)
+      Wagemage.expects(:command)
                .with('git push origin HEAD', chdir: @repo.clone_dir)
                .returns(true)
 
@@ -88,7 +88,7 @@ module Codeslave
     test 'pull request' do
       url = 'https://github.com/foo/bar/baz/pulls/1'
 
-      Codeslave
+      Wagemage
         .expects(:command)
         .with(
           'hub pull-request --no-edit -b master -r bclams',
@@ -100,14 +100,14 @@ module Codeslave
     end
 
     test 'has changed' do
-      Codeslave
+      Wagemage
         .expects(:command)
         .with('git status -s', chdir: @repo.clone_dir)
         .returns(stdout: 'A foo/bar/baz.rb', stderr: '')
 
       assert @repo.has_changed?
 
-      Codeslave
+      Wagemage
         .expects(:command)
         .with('git status -s', chdir: @repo.clone_dir)
         .returns(stdout: '', stderr: '')

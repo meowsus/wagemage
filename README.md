@@ -1,9 +1,9 @@
-# Codeslave
+# Wagemage
 
 A CLI for making changes to many GitHub-hosted git repositories.
 
 [![Tests
-Status](https://github.com/meowsus/codeslave/workflows/Tests/badge.svg)](https://github.com/meowsus/codeslave/actions)
+Status](https://github.com/meowsus/wagemage/workflows/Tests/badge.svg)](https://github.com/meowsus/wagemage/actions)
 
 ## Inspiration
 
@@ -11,12 +11,12 @@ At [Workarea](https://github.com/workarea-commerce) we have adopted a mutli-repo
 
 We tried using [Gitbot](https://github.com/clever/gitbot) but found that their solution only accounts for making changes to the default branch of each repository. This does not work for us, since we support many versions of our plugins and have therefore adopted a branching strategy that works for us.
 
-Codeslave was born out of fear of mundane tasks. Maybe it can help you too!
+Wagemage was born out of fear of mundane tasks. Maybe it can help you too!
 
 ## Installation
 
 ```sh
-gem install codeslave
+gem install wagemage
 ```
 
 ## Dependencies
@@ -29,13 +29,13 @@ gem install codeslave
 
 ## What It Does
 
-Codeslave hits the GitHub API to retrieve a list of repositories for the currently authenticated user. It can optionally be configured to search only within a given GitHub organization for this list of repositories.
+Wagemage hits the GitHub API to retrieve a list of repositories for the currently authenticated user. It can optionally be configured to search only within a given GitHub organization for this list of repositories.
 
-Once the list of repositories is derived, Codeslave asks if you'd like to clone the list of repos it has found. If you agree, they are cloned to a temporary directory on your machine that will be cleaned up once the operation is complete, unless otherwise specified.
+Once the list of repositories is derived, Wagemage asks if you'd like to clone the list of repos it has found. If you agree, they are cloned to a temporary directory on your machine that will be cleaned up once the operation is complete, unless otherwise specified.
 
-Upon cloning all of the repositories, each is searched for a list of remote branches. Codeslave can optionally be configured to search for remote branches that match a specific pattern.
+Upon cloning all of the repositories, each is searched for a list of remote branches. Wagemage can optionally be configured to search for remote branches that match a specific pattern.
 
-Once the list of branches is derived, Codeslave asks you to review the list of repositories and their branches to make sure that they look correct to you before executing the supplied script on each branch.
+Once the list of branches is derived, Wagemage asks you to review the list of repositories and their branches to make sure that they look correct to you before executing the supplied script on each branch.
 
 For each branch in each repository the following occurs:
 1. The branch is checked out
@@ -56,9 +56,9 @@ For each branch in each repository the following occurs:
 ## Usage
 
 ```sh
-$ codeslave --help
+$ wagemage --help
 
-usage: codeslave [options]
+usage: wagemage [options]
     -h, --help       print this help
     -v, --version    print the version
     -o, --org        github org
@@ -71,7 +71,7 @@ usage: codeslave [options]
     --debug          don't push or issue PR, keep the tmp directory
 ```
 
-You will be prompted to enter your Github Personal Access Token at runtime, unless it is supplied as the value for the `CODESLAVE_GITHUB_TOKEN` environment variable in your current session.
+You will be prompted to enter your Github Personal Access Token at runtime, unless it is supplied as the value for the `WAGEMAGE_GITHUB_TOKEN` environment variable in your current session.
 
 ### Options
 
@@ -89,7 +89,7 @@ Limits repository search to a specified GitHub organization.
 
 #### `--repo` (or `-r`)
 
-Filter returned repositories based on name. Repository names are returned as full names: `meowsus/codeslave` instead of just `codeslave`.
+Filter returned repositories based on name. Repository names are returned as full names: `meowsus/wagemage` instead of just `wagemage`.
 
 ```
 --repo '^workarea-commerce/workarea-' # returns all Workarea plugin repos
@@ -113,12 +113,12 @@ Filter available remote branches based on name.
 
 #### `--script` (or `-s`)
 
-An path to a script to be executed on each derived branch across all derived repositories. This path can be absolute or relative to the directory in which the `codeslave` command is run.
+An path to a script to be executed on each derived branch across all derived repositories. This path can be absolute or relative to the directory in which the `wagemage` command is run.
 
 ```
---script ~/codeslave_scripts/hunt_the_wumpus
---script /path/to/codeslave_scripts/angband
---script ./codeslave_scripts/arena_of_octos
+--script ~/wagemage_scripts/hunt_the_wumpus
+--script /path/to/wagemage_scripts/angband
+--script ./wagemage_scripts/arena_of_octos
 --script scripts/dwarf_fortress
 ```
 
@@ -161,7 +161,7 @@ The prefix of the "temporary" branch that is created before changes are made to 
 
 * **Type**: String
 * **Required?**: Yes
-* **Default**: `codeslave`
+* **Default**: `wagemage`
 
 #### `--help` (or `-h`)
 
@@ -183,7 +183,7 @@ Prevents
 All master branches across all repositories in a given organization:
 
 ```sh
-codeslave \
+wagemage \
   --org workarea-commerce \
   --branch '^master$' \
   --script ~/path/to/some/script.sh
@@ -192,8 +192,8 @@ codeslave \
 All master and development branches for a specific repository, and debug:
 
 ```sh
-codeslave \
-  --repo 'meowsus/codeslave' \
+wagemage \
+  --repo 'meowsus/wagemage' \
   --branch '^(master|develop)$' \
   --script relative/to/current/directory/script.sh \
   --debug
@@ -202,7 +202,7 @@ codeslave \
 All stable release branches across the universe of Workarea and its plugins, prefixed with a Jira issue key to enable the Jira/GitHub integration, with all team members added to the pull request:
 
 ```sh
-codeslave \
+wagemage \
   --org workarea-commerce \
   --repo '^workarea-commerce/workarea' \
   --branch '(-stable$|^master$)' \
@@ -217,7 +217,7 @@ As mentioned, the script is supplied with the current repository's path as the f
 
 The script can be of any type that is executable by the host machine.
 
-The script **must** exit with a zero exit code to be considered successful. Exiting with a non-zero exit code tells Codeslave to skip operation on the current branch in the current repository.
+The script **must** exit with a zero exit code to be considered successful. Exiting with a non-zero exit code tells Wagemage to skip operation on the current branch in the current repository.
 
 Peruse [the examples](./examples) for a better understanding of what to do and contribute your own if you've done something noteworthy!
 
@@ -231,7 +231,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/meowsus/codeslave. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/meowsus/wagemage. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -239,4 +239,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Codeslave project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/meowsus/codeslave/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Wagemage project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/meowsus/wagemage/blob/master/CODE_OF_CONDUCT.md).

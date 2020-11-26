@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    codeslave (0.3.0.pre)
+    wagemage (1.0.0)
       colorize (~> 0.8)
       octokit (~> 4.14)
       slop (~> 4.7)
@@ -22,8 +22,9 @@ GEM
     concurrent-ruby (1.1.6)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    faraday (1.0.0)
+    faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
+      ruby2_keywords
     hashdiff (1.0.1)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
@@ -31,7 +32,7 @@ GEM
     minitest (5.14.0)
     mocha (1.11.2)
     multipart-post (2.1.1)
-    octokit (4.16.0)
+    octokit (4.19.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
     pry (0.12.2)
@@ -39,11 +40,12 @@ GEM
       method_source (~> 0.9.0)
     public_suffix (4.0.3)
     rake (12.3.3)
+    ruby2_keywords (0.0.2)
     safe_yaml (1.0.5)
     sawyer (0.8.2)
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
-    slop (4.8.0)
+    slop (4.8.2)
     thread_safe (0.3.6)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
@@ -60,12 +62,12 @@ PLATFORMS
 DEPENDENCIES
   activesupport (~> 6.0)
   bundler (~> 2.0)
-  codeslave!
   minitest (~> 5.0)
   mocha (~> 1.11)
   pry
   rake (~> 12.3.3)
   vcr (~> 5.0)
+  wagemage!
   webmock (~> 3.7)
 
 BUNDLED WITH

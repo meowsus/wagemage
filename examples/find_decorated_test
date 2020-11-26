@@ -10,7 +10,7 @@
 #
 # Command to run:
 #
-# codeslave \
+# wagemage \
 #   --org workarea-commerce \
 #   --repo '-theme$' \
 #   --branch '(-stable$|^master$)' \

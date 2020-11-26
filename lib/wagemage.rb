@@ -18,12 +18,12 @@ Octokit.configure do |c|
   c.auto_paginate = true
 end
 
-require 'codeslave/version'
-require 'codeslave/helpers'
-require 'codeslave/cli'
-require 'codeslave/repo'
+require 'wagemage/version'
+require 'wagemage/helpers'
+require 'wagemage/cli'
+require 'wagemage/repo'
 
-module Codeslave
+module Wagemage
   class Error < StandardError; end
   class OptionError < Slop::MissingRequiredOption; end
 

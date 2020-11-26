@@ -1,4 +1,4 @@
-module Codeslave
+module Wagemage
   class Repo
     attr_reader :clone_dir
 
@@ -17,12 +17,12 @@ module Codeslave
     end
 
     def clone!
-      Codeslave.command("git clone #{url} #{clone_dir}", error: true)
+      Wagemage.command("git clone #{url} #{clone_dir}", error: true)
     end
 
     def branches
       @branches ||= begin
-        result = Codeslave.command('git branch -a', chdir: @clone_dir)
+        result = Wagemage.command('git branch -a', chdir: @clone_dir)
 
         return [] unless result[:status].success?
 
@@ -48,30 +48,30 @@ module Codeslave
 
     def checkout!(ref, create: false)
       cmd = create ? "git checkout -b #{ref}" : "git checkout #{ref}"
-      Codeslave.command(cmd, chdir: @clone_dir)
+      Wagemage.command(cmd, chdir: @clone_dir)
     end
 
     def add_all!
-      Codeslave.command('git add .', chdir: @clone_dir)
+      Wagemage.command('git add .', chdir: @clone_dir)
     end
 
     def commit!(message)
-      Codeslave.command(%Q[git commit -m "#{message}"], chdir: @clone_dir)
+      Wagemage.command(%Q[git commit -m "#{message}"], chdir: @clone_dir)
     end
 
     def push!
-      Codeslave.command('git push origin HEAD', chdir: @clone_dir)
+      Wagemage.command('git push origin HEAD', chdir: @clone_dir)
     end
 
     def pull_request!(base_branch, reviewers = [])
       cmd = "hub pull-request --no-edit -b #{base_branch}"
       cmd = [cmd, '-r', reviewers.join(',')].join(' ') unless reviewers.empty?
 
-      Codeslave.command(cmd, chdir: @clone_dir)
+      Wagemage.command(cmd, chdir: @clone_dir)
     end
 
     def has_changed?
-      result = Codeslave.command('git status -s', chdir: @clone_dir)
+      result = Wagemage.command('git status -s', chdir: @clone_dir)
       !result[:stdout].empty?
     end
   end

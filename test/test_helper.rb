@@ -1,7 +1,7 @@
 require "bundler/setup"
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-require "codeslave"
+require "wagemage"
 
 require "minitest/autorun"
 require "vcr"
@@ -14,14 +14,14 @@ require "mocha/minitest"
 # replace the token in the request with "REDACTED" and uncomment the
 # following line. This will ensure your GitHub token won't accidentally
 # be leaked.
-ENV["CODESLAVE_GITHUB_TOKEN"] = "REDACTED"
+ENV["WAGEMAGE_GITHUB_TOKEN"] = "REDACTED"
 
 VCR.configure do |config|
   config.hook_into :webmock
   config.cassette_library_dir = 'test/cassettes'
 end
 
-module Codeslave
+module Wagemage
   class Test < ActiveSupport::TestCase
     # base class for all tests
   end

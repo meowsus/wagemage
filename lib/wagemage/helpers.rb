@@ -1,4 +1,4 @@
-module Codeslave
+module Wagemage
   module Helpers
     def say(message, space: false, color: :white)
       puts if space

@@ -1,20 +1,20 @@
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "codeslave/version"
+require "wagemage/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "codeslave"
-  spec.version       = Codeslave::VERSION
+  spec.name          = "wagemage"
+  spec.version       = Wagemage::VERSION
   spec.authors       = ["Curt Howard"]
   spec.email         = ["curt@portugly.com"]
 
   spec.summary       = "A CLI for making changes to many Github repos"
   spec.description   = "A CLI for making changes to many Github repos"
-  spec.homepage      = "https://github.com/meowsus/codeslave"
+  spec.homepage      = "https://github.com/meowsus/wagemage"
   spec.license       = "MIT"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/meowsus/codeslave"
+  spec.metadata["source_code_uri"] = "https://github.com/meowsus/wagemage"
 
   spec.files = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`
