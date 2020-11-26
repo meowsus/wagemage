@@ -2,6 +2,10 @@
 
 A CLI for making changes to many GitHub-hosted git repositories.
 
+## Definition
+
+> (noun) A magician, usually hermetic, employed by a corporation or government.
+
 [![Tests
 Status](https://github.com/meowsus/wagemage/workflows/Tests/badge.svg)](https://github.com/meowsus/wagemage/actions)
 
