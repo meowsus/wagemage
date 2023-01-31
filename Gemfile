@@ -10,6 +10,6 @@ gem "vcr", "~> 5.0"
 
 gem "webmock", "~> 3.7"
 
-gem "activesupport", "~> 6.0"
+gem "activesupport", "~> 7.0"
 
 gem "mocha", "~> 1.11"
